@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大会結果詳細 | かむろ坂SC</title>
+    <style>
+        /* --- 共通デザイン設定 --- */
+        :root {
+            --bg-color: #1a1a1a;
+            --text-color: #ffffff;
+            --accent-pink: #eebbcb;
+        }
+
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            color: var(--accent-pink);
+            border-bottom: 2px solid var(--accent-pink);
+            padding-bottom: 15px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link::before {
+            content: "« ";
+            color: var(--accent-pink);
+        }
+
+        .back-link:hover {
+            color: var(--accent-pink);
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .member-card {
+            background-color: #252525;
+            border: 1px solid #444;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .member-card h3 {
+            color: var(--accent-pink);
+            margin-top: 0;
+            border-bottom: 1px solid #555;
+            padding-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .result-list {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+
+        .result-list li {
+            margin-bottom: 8px;
+        }
+
+        .label {
+            font-weight: bold;
+            color: #aaa;
+            margin-right: 5px;
+        }
+
+        .time {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        /* --- 動画エリア共通 --- */
+        .youtube-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%;
+            /* 16:9 */
+            height: 0;
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #444;
+        }
+
+        /* No Video テキスト */
+        .no-video-text {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+        }
+
+        /* リンクボタンのデザイン */
+        .youtube-link-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .youtube-link-overlay {
+            background-color: rgba(0, 0, 0, 0.7);
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .yt-btn {
+            background-color: #FF0000;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+            transition: opacity 0.3s;
+        }
+
+        .yt-btn:hover {
+            opacity: 0.8;
+        }
+
+        .yt-note {
+            font-size: 0.8rem;
+            color: #ccc;
+            margin-bottom: 5px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #000;
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 60px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <a href="index.html" class="back-link">トップページへ戻る</a>
+
+        <header>
+            <h1>第12回日本マスターズ水泳スプリント選手権大会 EAST</h1>
+            <p><strong>期日：</strong>2025年11月29日(土)～30日(日)<br>
+                <strong>会場：</strong>千葉県国際総合水泳場(25m)
+            </p>
+        </header>
+
+        <div id="card-grid" class="card-grid"></div>
+
+    </div>
+
+    <footer>
+        &copy; 2025 Kamurozaka SC. All Rights Reserved.
+    </footer>
+
+    <script>
+        // 1. メンバーデータ（ここを編集するだけで人数を増減できます）
+        // videoUrl: 動画がない場合は null または "" (空文字) にしてください。
+        const members = [
+            {
+                name: "小林 舜典",
+                event: "100m 個人メドレー",
+                time: "1:03.48",
+                videoUrl: "https://youtu.be/pWJ4X1ZHvnI?t=17814",
+                thumbUrl: "https://img.youtube.com/vi/pWJ4X1ZHvnI/hqdefault.jpg"
+            },
+            {
+                name: "内藤 晋作",
+                event: "100m 個人メドレー",
+                time: "1:06.84",
+                videoUrl: "https://youtu.be/pWJ4X1ZHvnI?t=17931",
+                thumbUrl: "https://img.youtube.com/vi/pWJ4X1ZHvnI/hqdefault.jpg"
+            },
+            {
+                name: "阿部 泰樹",
+                event: "100m 個人メドレー",
+                time: "1:07.09",
+                videoUrl: "https://youtu.be/pWJ4X1ZHvnI?t=17931",
+                thumbUrl: "https://img.youtube.com/vi/pWJ4X1ZHvnI/hqdefault.jpg"
+            },
+            {
+                name: "井筒 洪平",
+                event: "100m 個人メドレー",
+                time: "1:07.85",
+                videoUrl: "https://youtu.be/pWJ4X1ZHvnI?t=17931",
+                thumbUrl: "https://img.youtube.com/vi/pWJ4X1ZHvnI/hqdefault.jpg"
+            },
+            {
+                name: "木幡 活彦",
+                event: "100m 個人メドレー",
+                time: "1:08.60",
+                videoUrl: "https://youtu.be/pWJ4X1ZHvnI?t=18385",
+                thumbUrl: "https://img.youtube.com/vi/pWJ4X1ZHvnI/hqdefault.jpg"
+            },
+            {
+                name: "増川 龍世",
+                event: "100m 個人メドレー",
+                time: "1:08.85",
+                videoUrl: "https://youtu.be/pWJ4X1ZHvnI?t=17931",
+                thumbUrl: "https://img.youtube.com/vi/pWJ4X1ZHvnI/hqdefault.jpg"
+            },
+            {
+                name: "栗山 卓也",
+                event: "100m 個人メドレー",
+                time: "1:09.13",
+                videoUrl: "https://youtu.be/pWJ4X1ZHvnI?t=18385",
+                thumbUrl: "https://img.youtube.com/vi/pWJ4X1ZHvnI/hqdefault.jpg"
+            },
+            {
+                name: "小池 勇登",
+                event: "100m 個人メドレー",
+                time: "1:11.01",
+                videoUrl: "https://youtu.be/pWJ4X1ZHvnI?t=17814",
+                thumbUrl: "https://img.youtube.com/vi/pWJ4X1ZHvnI/hqdefault.jpg"
+            },
+        ];
+
+        // 2. HTML生成ロジック（触らなくてOK）
+        const grid = document.getElementById('card-grid');
+
+        members.forEach(member => {
+            // カードの枠作成
+            const card = document.createElement('div');
+            card.className = 'member-card';
+
+            // 動画エリアのHTMLを判定
+            let videoHtml = '';
+            if (member.videoUrl) {
+                // 動画ありの場合：リンクボタンを表示
+                videoHtml = `
+                    <div class="youtube-link-placeholder" style="background-image: url('${member.thumbUrl}');">
+                        <div class="youtube-link-overlay">
+                            <span class="yt-note">外部サイトで再生</span>
+                            <a href="${member.videoUrl}" target="_blank" class="yt-btn">
+                                YouTubeで見る ▷
+                            </a>
+                        </div>
+                    </div>`;
+            } else {
+                // 動画なしの場合
+                videoHtml = `<div class="no-video-text">No Video</div>`;
+            }
+
+            // カードの中身を流し込み
+            card.innerHTML = `
+                <h3>${member.name}</h3>
+                <ul class="result-list">
+                    <li><span class="label">種目:</span>${member.event}</li>
+                    <li><span class="label">Time:</span><span class="time">${member.time}</span></li>
+                </ul>
+                <div class="youtube-container">
+                    ${videoHtml}
+                </div>
+            `;
+
+            // グリッドに追加
+            grid.appendChild(card);
+        });
+    </script>
+</body>
+
+</html>
