@@ -303,6 +303,51 @@
             // 生成開始（間隔800ミリ秒）
             setInterval(createPetal, 800);
         });
+            // ▼▼▼ 追加機能：クリックで広がる波紋エフェクト ▼▼▼
+    
+    // 波紋のスタイルを定義
+    const rippleStyle = document.createElement('style');
+    rippleStyle.innerText = `
+        .ripple {
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4); /* 白い半透明 */
+            transform: scale(0);
+            pointer-events: none;
+            z-index: 9998; /* 桜より奥、背景より手前 */
+            animation: ripple-anim 0.8s linear;
+        }
+        @keyframes ripple-anim {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(rippleStyle);
+
+    // クリックイベントの監視
+    document.addEventListener('click', (e) => {
+        const ripple = document.createElement('span');
+        ripple.className = 'ripple';
+        
+        // 波紋の大きさを指定
+        const size = 100; 
+        
+        // クリックした位置に配置
+        ripple.style.width = `${size}px`;
+        ripple.style.height = `${size}px`;
+        ripple.style.left = `${e.clientX - size / 2}px`;
+        ripple.style.top = `${e.clientY - size / 2}px`;
+
+        document.body.appendChild(ripple);
+
+        // アニメーションが終わったら削除
+        setTimeout(() => {
+            ripple.remove();
+        }, 800);
+    });
+
     </script>
     
     
